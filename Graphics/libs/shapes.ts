@@ -95,19 +95,63 @@ function smiley(radius: number) : twgl.Arrays {
     // HINT: You can use polar coordinates to define the positions of vertices,
     // using the radius and an angle. Then convert them to polar coordinates.
 
-    // Sample data for a single yellow triangle. Replace with your values.
-    positionData.push(0, 100);
-    positionData.push(-120, -100);
-    positionData.push(120, -100);
-    colorData.push(0.9, 0.8, 0, 1);
-    colorData.push(0.9, 0.8, 0, 1);
-    colorData.push(0.9, 0.8, 0, 1);
+    // Add a filled circle as a fan of triangles around its center.
+    // The vertices are defined with polar coordinates and converted to cartesian.
+    function addCircle(cx: number, cy: number, circleRadius: number,
+                       sides: number, color: number[]): void {
+        const center = positionData.length / 2;
+        positionData.push(cx, cy);
+        colorData.push(...color);
+        for (let s = 0; s < sides; s++) {
+            const angle = 2 * Math.PI * s / sides;
+            positionData.push(cx + Math.cos(angle) * circleRadius,
+                              cy + Math.sin(angle) * circleRadius);
+            colorData.push(...color);
+        }
+        for (let s = 0; s < sides; s++) {
+            indexData.push(center, center + 1 + s, center + 1 + (s + 1) % sides);
+        }
+    }
 
-    indexData.push(0, 2, 1);
+    // Add a "V" shape made of two triangles.
+    // A positive height points the tip up (^), a negative height points it down (V).
+    function addV(cx: number, cy: number, halfWidth: number, height: number,
+                  thickness: number, color: number[]): void {
+        const first = positionData.length / 2;
+        positionData.push(cx - halfWidth, cy);                         // left end
+        positionData.push(cx, cy + height);                            // outer tip
+        positionData.push(cx + halfWidth, cy);                         // right end
+        positionData.push(cx, cy + height - Math.sign(height) * thickness); // inner tip
+        colorData.push(...color, ...color, ...color, ...color);
+        indexData.push(first, first + 1, first + 3);
+        indexData.push(first + 1, first + 2, first + 3);
+    }
 
+    const yellow = [1, 0.89, 0.24, 1];
+    const black = [0.08, 0.08, 0.08, 1];
 
+    // Outline and face
+    addCircle(0, 0, radius * 1.04, 36, black);
+    addCircle(0, 0, radius, 36, yellow);
 
+    // Eyes and eyebrows
+    for (const side of [-1, 1]) {
+        const ex = side * radius * 0.35;
+        const ey = radius * 0.22;
+        addCircle(ex, ey, radius * 0.1, 16, black);
+        addV(ex, ey + radius * 0.2, radius * 0.16, radius * 0.1, radius * 0.05, black);
+    }
 
+    // Nose
+    const nose = positionData.length / 2;
+    positionData.push(0, radius * 0.05);
+    positionData.push(-radius * 0.07, -radius * 0.12);
+    positionData.push(radius * 0.07, -radius * 0.12);
+    colorData.push(...black, ...black, ...black);
+    indexData.push(nose, nose + 1, nose + 2);
+
+    // Smile
+    addV(0, -radius * 0.3, radius * 0.5, -radius * 0.32, radius * 0.12, black);
 
     // Build the final object with the arrays for positions, colors, and indices
     const arrays: twgl.Arrays = {

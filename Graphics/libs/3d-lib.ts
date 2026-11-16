@@ -25,46 +25,58 @@ export class V3 {
         return v;
     }
 
-    // TODO: Complete the following methods
-
     static length(v: Vec3): number {
-        return 0;
+        return Math.sqrt(v[X] * v[X] + v[Y] * v[Y] + v[Z] * v[Z]);
     }
 
     static normalize(v: Vec3, dest?: Vec3): Vec3 {
         dest = dest || new Float32Array(3);
-
+        const length = V3.length(v);
+        const inverseLength = length === 0 ? 0 : 1 / length;
+        dest[X] = v[X] * inverseLength;
+        dest[Y] = v[Y] * inverseLength;
+        dest[Z] = v[Z] * inverseLength;
         return dest;
     }
 
     static dot(u: Vec3, v: Vec3): number {
-        return 0;
+        return u[X] * v[X] + u[Y] * v[Y] + u[Z] * v[Z];
     }
 
     static cross(u: Vec3, v: Vec3, dest?: Vec3): Vec3 {
         dest = dest || new Float32Array(3);
-
+        const ux = u[X], uy = u[Y], uz = u[Z];
+        const vx = v[X], vy = v[Y], vz = v[Z];
+        dest[X] = uy * vz - uz * vy;
+        dest[Y] = uz * vx - ux * vz;
+        dest[Z] = ux * vy - uy * vx;
         return dest;
     }
 
     // Add two vectors
     static add(u: Vec3, v: Vec3, dest?: Vec3): Vec3 {
         dest = dest || new Float32Array(3);
-
+        dest[X] = u[X] + v[X];
+        dest[Y] = u[Y] + v[Y];
+        dest[Z] = u[Z] + v[Z];
         return dest;
     }
 
     // Subtract two vectors
     static subtract(u: Vec3, v: Vec3, dest?: Vec3): Vec3 {
         dest = dest || new Float32Array(3);
-
+        dest[X] = u[X] - v[X];
+        dest[Y] = u[Y] - v[Y];
+        dest[Z] = u[Z] - v[Z];
         return dest;
     }
 
     // Multiply a vector by a scalar value
     static scale(u: Vec3, s: number, dest?: Vec3): Vec3 {
         dest = dest || new Float32Array(3);
-
+        dest[X] = u[X] * s;
+        dest[Y] = u[Y] * s;
+        dest[Z] = u[Z] * s;
         return dest;
     }
 }
