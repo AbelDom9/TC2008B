@@ -1,4 +1,7 @@
 #version 300 es
+// Este archivo esta basado en 04_UI/vs_matrices_vcolor.glsl y se usa para la carita y el pivote
+// Ademas este archivo me ayudo la IA para poderlo implementar de manera correcta
+
 in vec2 a_position;
 in vec4 a_color;
 
